@@ -1,0 +1,17 @@
+@import "theme";
+
+.explanation, .popup {
+  border-radius: 10px;
+  background-color: $jive-secondary-color !important;
+  border-color: $jive-secondary-color !important;
+  color: #ffffff;
+  .content {
+    height: 100% !important;
+  }
+  .controls {
+    font-size: .6em;
+    a[data-content="→"] {
+      color: rebeccapurple;
+    }
+  }
+}

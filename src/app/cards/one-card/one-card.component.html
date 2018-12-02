@@ -1,0 +1,6 @@
+<div class="one-card-wrapper" [ngClass]="cardClass">
+  <div class="one-card-container" [ngClass]="{'picked':!isAlwaysFlipped && card.isPicked}">
+    <img *ngIf="!isAlwaysFlipped && card.isPicked" [src]="'/assets/img/cards/' + card.rank + card.suit + '.svg'"
+         class="img-fluid" alt="play card">
+  </div>
+</div>
