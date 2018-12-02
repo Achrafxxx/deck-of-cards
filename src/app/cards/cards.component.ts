@@ -7,6 +7,7 @@ import {DialogService} from 'ng2-bootstrap-modal';
 import {ConfirmComponent} from '../shared/confirm-modal/confirm.component';
 import {GamificationService} from './shared/gamification/gamification.service';
 import {CommonModalComponent} from '../shared/common-modal/common-modal.component';
+import {CardSoundService} from './shared/card-sound/card-sound.service';
 
 const maxCards = 52;
 
@@ -26,7 +27,8 @@ export class CardsComponent implements OnInit, HasGuidedTour {
   score = 0;
   isLeaderboardModalVisible: boolean;
 
-  constructor(private dialogService: DialogService, private gamificationService: GamificationService, private changeDetector: ChangeDetectorRef) {
+  constructor(private dialogService: DialogService, private gamificationService: GamificationService,
+              private cardSoundService: CardSoundService, private changeDetector: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
@@ -66,6 +68,7 @@ export class CardsComponent implements OnInit, HasGuidedTour {
     if (!this.isCardAvailable()) {
       this._showLeaderboardModal();
     }
+    this.cardSoundService.play('pick');
   }
 
   shuffleCards(): void {
@@ -86,6 +89,7 @@ export class CardsComponent implements OnInit, HasGuidedTour {
   }
 
   private _initCards(): void {
+    this.cardSoundService.play('shuffle');
     this._resetCards();
     this._shuffle();
     this.score = 0;
@@ -96,6 +100,7 @@ export class CardsComponent implements OnInit, HasGuidedTour {
   private _resetCards(): void {
     this.pickedCards = [];
     this.cards = [];
+    let tmpCards = [];
     for (const rank of Object.keys(RankEnum)) {
       for (const suit of Object.keys(SuitEnum)) {
         const card: ICard = {
@@ -103,9 +108,17 @@ export class CardsComponent implements OnInit, HasGuidedTour {
           suit: <SuitEnum>SuitEnum[suit],
           isPicked: false
         };
-        this.cards.push(card);
+        tmpCards.push(card);
       }
     }
+    let i = 0;
+    const interval = setInterval(() => {
+      this.cards.push(tmpCards[i]);
+      i++;
+      if (i > tmpCards.length - 1) {
+        clearInterval(interval);
+      }
+    }, 10);
   }
 
   private _shuffle(): void {

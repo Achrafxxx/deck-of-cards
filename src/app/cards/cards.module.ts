@@ -6,21 +6,22 @@ import {SharedModule} from '../shared/shared.module';
 import {GamificationService} from './shared/gamification/gamification.service';
 import { LeaderboardComponent } from './leaderboard/leaderboard.component';
 import {FormsModule} from '@angular/forms';
-import { CardSoundDirective } from './shared/card-sound.directive';
+import {CardSoundService} from './shared/card-sound/card-sound.service';
 
 @NgModule({
   declarations: [
     CardsComponent,
     OneCardComponent,
     LeaderboardComponent,
-    CardSoundDirective],
+  ],
   imports: [
     CommonModule,
     FormsModule,
     SharedModule
   ],
   providers: [
-    GamificationService
+    GamificationService,
+    CardSoundService
   ],
   exports: [
     CardsComponent

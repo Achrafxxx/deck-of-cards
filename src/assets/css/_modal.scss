@@ -1,0 +1,33 @@
+@import "theme";
+
+.modal {
+  background-color: rgba(0, 0, 0, .5);
+  .modal-content {
+    .modal-header {
+      background-color: $jive-primary-color;
+      color: #ffffff;
+      padding: 15px 20px !important;
+    }
+  }
+  .close {
+    position: absolute;
+    right: -25px;
+    color: #ffffff;
+    opacity: .8;
+    border: 2px solid #ffffff;
+    padding: 5px !important;
+    width: 30px;
+    height: 30px;
+    line-height: 14px;
+    border-radius: 20px;
+    font-size: 18px;
+    top: 17px;
+    &:hover {
+      opacity: 1 !important;
+      color: #ffffff !important;
+    }
+  }
+  .btn.btn-primary, .btn-primary.custom-file-control::before {
+    color: $jive-primary-color;
+  }
+}
