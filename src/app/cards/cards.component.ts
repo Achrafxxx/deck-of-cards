@@ -36,19 +36,25 @@ export class CardsComponent implements OnInit, HasGuidedTour {
   }
 
   tourAutoStart() {
-    return !true;
+    return true;
   }
 
   getTour(): TourStep[] {
     return [
       new HTMLTourStep(`
-        <h1>Hey there,</h1>
+        <h3>👋 Hey there,</h3>
+        <p class="lead">Welcome to Jive gaming Server !</p>
     `),
-      // new ElementTourStep('#all-cards', 'Here, I will explain this.'),
-      // new ElementTourStep('#pick-random-card-button', 'Here, I will explain this.'),
-      // new ElementTourStep('#shuffle-cards-button', 'Here, I will explain this.'),
-      new ElementTourStep('#picked-cards', 'Then, I will explain this.'),
-      new ElementTourStep('#your-score', 'Then, I will explain this.'), new HTMLTourStep(`Finally, we are <em>done</em>!`)
+      new ElementTourStep('#all-cards', 'This deck consists of 52 Cards in each of the 4 suits of Spades, Hearts, Diamonds, and' +
+        ' Clubs. Each suit contains 13 cards: Ace, 2, 3, 4, 5, 6, 7, 8, 9, 10, Jack, Queen, King. You can pick any card by clicking on it'),
+      new ElementTourStep('#pick-random-card-button', 'You can Pick a card randomly'),
+      new ElementTourStep('#shuffle-cards-button', 'Randomize the card\'s positions\n'),
+      new ElementTourStep('#picked-cards', 'This area represents the picked cards that are not melded yet'),
+      new ElementTourStep('#your-score', 'The total scored points'),
+      new HTMLTourStep(`
+      <h2>We are <em>done</em> here!</h2>
+      <h4>Good Luck🔥</h4>
+      `)
     ];
   }
 
@@ -91,7 +97,6 @@ export class CardsComponent implements OnInit, HasGuidedTour {
   private _initCards(): void {
     this.cardSoundService.play('shuffle');
     this._resetCards();
-    this._shuffle();
     this.score = 0;
     this.matchingCardsGroup = [];
     this.gamificationService.resetDeck();
@@ -100,7 +105,7 @@ export class CardsComponent implements OnInit, HasGuidedTour {
   private _resetCards(): void {
     this.pickedCards = [];
     this.cards = [];
-    let tmpCards = [];
+    const tmpCards = [];
     for (const rank of Object.keys(RankEnum)) {
       for (const suit of Object.keys(SuitEnum)) {
         const card: ICard = {
@@ -116,6 +121,7 @@ export class CardsComponent implements OnInit, HasGuidedTour {
       this.cards.push(tmpCards[i]);
       i++;
       if (i > tmpCards.length - 1) {
+        this._shuffle();
         clearInterval(interval);
       }
     }, 10);
@@ -164,7 +170,6 @@ export class CardsComponent implements OnInit, HasGuidedTour {
         if (isConfirmed) {
           this.score = 0;
           this._initCards();
-          this._shuffle();
         }
       });
   }
