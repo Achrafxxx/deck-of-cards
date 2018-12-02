@@ -16,7 +16,7 @@
           Pick random card
         </button>
         <button class="btn btn-lg btn-raised btn-light " (click)="shuffleCards()" id="shuffle-cards-button">
-          <span *ngIf="isCardAvailable()"> Shuffle Cards</span>
+          <span *ngIf="isCardAvailable()">Shuffle Cards</span>
           <span *ngIf="!isCardAvailable()">Play again</span>
         </button>
       </div>
@@ -36,13 +36,14 @@
         </div>
       </div>
     </div>
-    <div class="matching-cards-group-container" *ngIf="matchingCardsGroup.length > 0">
+    <div class="matching-cards-group-container" [hidden]="matchingCardsGroup.length === 0">
       <div class="matching-cards-wrapper" *ngFor="let matchingCards of matchingCardsGroup">
         <div class="matching-cards-container"
              [ngStyle]="{'grid-template-columns': 'repeat('+matchingCards.length+', 8px)'}">
           <one-card *ngFor="let card of matchingCards" [card]="card" [cardClass]="'card-xs'"></one-card>
         </div>
       </div>
+      <span #confettiElement></span>
     </div>
   </div>
 </div>

@@ -118,7 +118,6 @@ export class GamificationService {
     };
   }
 
-
   getPropagationFromIndex(startIdx, cardSuit) {
     let left = startIdx;
     let right = startIdx;

@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {ICard} from './shared/card.model';
 import {RankEnum} from './shared/card-rank.enum';
 import {SuitEnum} from './shared/card-suit.enum';
@@ -8,6 +8,7 @@ import {ConfirmComponent} from '../shared/confirm-modal/confirm.component';
 import {GamificationService} from './shared/gamification/gamification.service';
 import {CommonModalComponent} from '../shared/common-modal/common-modal.component';
 import {CardSoundService} from './shared/card-sound/card-sound.service';
+import {Confetti} from '../shared/confetti/confetti.model';
 
 const maxCards = 52;
 
@@ -19,6 +20,7 @@ const maxCards = 52;
 export class CardsComponent implements OnInit, HasGuidedTour {
 
   @ViewChild('leaderboardModal') leaderboardModal: CommonModalComponent;
+  @ViewChild('confettiElement') confettiElement: ElementRef;
 
   cards: ICard[];
   pickedCards: ICard[];
@@ -154,9 +156,11 @@ export class CardsComponent implements OnInit, HasGuidedTour {
           matchingCards.push(wCard);
           this.pickedCards = this.pickedCards.filter(c => !(c.suit === wCard.suit && c.rank === wCard.rank));
         });
-      this.matchingCardsGroup.push(matchingCards);
+      this.matchingCardsGroup.unshift(matchingCards);
       this.score += mappedCardsGroup.reduce((a, b) => a + Math.min(b.idx, 10), 0);
       this.gamificationService.removeGroupFromDeck(mappedCardsGroup);
+      new Confetti(this.confettiElement.nativeElement, 30).start();
+      this.cardSoundService.play('melt');
     }
   }
 

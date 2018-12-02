@@ -5,7 +5,8 @@ export class CardSoundService {
 
   audio: any = {
     shuffle: null,
-    pick: null
+    pick: null,
+    melt: null,
   };
 
   constructor() {
@@ -13,10 +14,13 @@ export class CardSoundService {
     this.audio.shuffle.load();
     this.audio.shuffle.volume = 0.8;
 
-
     this.audio.pick = new Audio('/assets/audio/pick-card.mp3');
     this.audio.pick.load();
-    this.audio.shuffle.volume = 0.8;
+    this.audio.pick.volume = 0.5;
+
+    this.audio.melt = new Audio('/assets/audio/melt-cards.mp3');
+    this.audio.melt.load();
+    this.audio.melt.volume = 0.8;
   }
 
   play(type: string) {
