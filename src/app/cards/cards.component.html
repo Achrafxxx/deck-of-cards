@@ -2,7 +2,7 @@
   <div class="container-fluid">
     <div class="cards-container">
       <div class="all-cards-container" id="all-cards">
-        <div class="cards-wrapper" #allCardsWrapper>
+        <div class="cards-wrapper" resize-detector [cardWidth]="200" [totalCards]="52">
           <div class="one-card-wrapper animated" *ngFor="let card of cards; let i = index" (click)="pickCard(i)"
                [ngClass]="{'picked fadeOutDown':card.isPicked}">
             <one-card [card]="card" [isAlwaysFlipped]="true"></one-card>
@@ -12,26 +12,47 @@
 
       <div class="buttons-container">
         <button class="btn btn-lg btn-outline-light" (click)="pickCard()" id="pick-random-card-button"
-                [disabled]="pickedCards.length === cards.length">
+                [disabled]="!isCardAvailable()">
           Pick random card
         </button>
         <button class="btn btn-lg btn-raised btn-light " (click)="shuffleCards()" id="shuffle-cards-button">
-          Shuffle Cards
+          <span *ngIf="isCardAvailable()"> Shuffle Cards</span>
+          <span *ngIf="!isCardAvailable()">Play again</span>
         </button>
       </div>
-      <div class="result-container" id="second-complex-thing">
-        <div class="picked-cards-container">
-          <div class="cards-wrapper" #pickedCardsWrapper>
+      <div class="result-container">
+        <div class="picked-cards-container" id="picked-cards">
+          <div class="cards-wrapper" resize-detector [cardWidth]="100" [totalCards]="52">
             <div class="one-card-wrapper animated fadeInRight fast" *ngFor="let card of pickedCards">
               <one-card [card]="card" [cardClass]="'card-sm'"></one-card>
             </div>
           </div>
         </div>
-        <div class="score-container">
-          <h5 class="title">Your score</h5>
-          <h1>{{score}}</h1>
+        <div class="score-wrapper" id="your-score">
+          <div class="score-container">
+            <h5 class="title">Your score</h5>
+            <h1>{{score}}</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="matching-cards-group-container" *ngIf="matchingCardsGroup.length > 0">
+      <div class="matching-cards-wrapper" *ngFor="let matchingCards of matchingCardsGroup">
+        <div class="matching-cards-container"
+             [ngStyle]="{'grid-template-columns': 'repeat('+matchingCards.length+', 8px)'}">
+          <one-card *ngFor="let card of matchingCards" [card]="card" [cardClass]="'card-xs'"></one-card>
         </div>
       </div>
     </div>
   </div>
+</div>
+
+<div *ngIf="isLeaderboardModalVisible">
+  <common-modal #leaderboardModal [title]="'Congratulations you scored: ' + score +'pts'"
+                [primaryButton]="leaderboard?.isAddMode?'Add' : ''"
+                (primaryButtonClicked)="leaderboard?.addPlayer()" (hideButtonClicked)="hideLeaderboardModal()">
+    <div class="modal-body">
+      <leaderboard #leaderboard [score]="score"></leaderboard>
+    </div>
+  </common-modal>
 </div>

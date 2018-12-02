@@ -9,6 +9,10 @@
     width: 100px;
     height: 140px;
   }
+  &.card-xs {
+    width: 25px;
+    height: 35px;
+  }
   &:hover {
     box-shadow: -5px 0 10px 0 rgba(0, 0, 0, .38);
   }

@@ -4,6 +4,7 @@ $border-color: #ffffff;
   padding: 10px;
   border: 1px dashed $border-color;
   border-radius: 10px;
+  box-shadow: inset -2px 1px 20px 0px rgba(0, 0, 0, 0.3);
 }
 
 .main-cards-wrapper {
@@ -41,9 +42,9 @@ $border-color: #ffffff;
     }
     .result-container {
       display: flex;
+      margin-bottom: 60px;
       .picked-cards-container {
         @extend %cards-container-shared;
-        max-width: 650px;
         min-height: 162px;
         flex-grow: 1;
         .cards-wrapper {
@@ -56,13 +57,19 @@ $border-color: #ffffff;
           }
         }
       }
-      .score-container {
+      .score-wrapper {
         @extend %cards-container-shared;
         margin-left: 20px;
-        width: 200px;
-        text-align: center;
-        color: #ffffff;
-        .title {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .score-container {
+          width: 200px;
+          text-align: center;
+          color: #ffffff;
+          h1 {
+            font-size: 3.5rem;
+          }
         }
       }
     }
@@ -77,6 +84,28 @@ $border-color: #ffffff;
       }
       .btn-light {
         color: inherit;
+      }
+      .btn-raised {
+        color: #c4d600;
+      }
+    }
+  }
+  .matching-cards-group-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px 15px;
+    background: rgba(0, 0, 0, 0.3);
+    .matching-cards-wrapper {
+      display: inline-block;
+      .matching-cards-container {
+        margin: 5px 8px 0 0;
+        grid-template-columns: repeat(3, 8px);
+        display: grid;
+        box-shadow: 0 0 0 1px white;
+        border-radius: 2px;
+        padding: 2px 20px 2px 2px;
       }
     }
   }

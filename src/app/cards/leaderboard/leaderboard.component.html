@@ -1,0 +1,31 @@
+<div class="leaderboard-container">
+  <div *ngIf="isAddMode">
+    <div class="form-group">
+      <label for="name" class="bmd-label-floating">Enter your Name</label>
+      <input type="text" class="form-control" id="name" [(ngModel)]="playerName">
+    </div>
+  </div>
+  <div *ngIf="!isAddMode">
+    <h4 class="title">
+      Leaderboard
+    </h4>
+    <table class="table table-borderless">
+      <thead>
+      <tr>
+        <th scope="col">Rank</th>
+        <th scope="col">Name</th>
+        <th scope="col">Score</th>
+        <th scope="col">Date</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let record of oldRecords; let i = index">
+        <th scope="row">{{i+1}}</th>
+        <td>{{record.name}}</td>
+        <td>{{record.score}}</td>
+        <td>{{record.date | date}}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

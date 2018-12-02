@@ -1,12 +1,13 @@
-import {AfterViewInit, Component, ElementRef, OnInit, Renderer2, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {ICard} from './shared/card.model';
 import {RankEnum} from './shared/card-rank.enum';
 import {SuitEnum} from './shared/card-suit.enum';
-import {ElementTourStep, HasGuidedTour, HTMLTourStep, TourStep, YoutubeTourStep} from 'telemachy';
+import {ElementTourStep, HasGuidedTour, HTMLTourStep, TourStep} from 'telemachy';
+import {DialogService} from 'ng2-bootstrap-modal';
+import {ConfirmComponent} from '../shared/confirm-modal/confirm.component';
+import {GamificationService} from './shared/gamification/gamification.service';
+import {CommonModalComponent} from '../shared/common-modal/common-modal.component';
 
-const cardWidth = 200;
-const smallCardWidth = 100;
-const totalCards = 52;
 const maxCards = 52;
 
 @Component({
@@ -14,37 +15,22 @@ const maxCards = 52;
   templateUrl: './cards.component.html',
   styleUrls: ['./cards.component.scss']
 })
-export class CardsComponent implements OnInit, AfterViewInit, HasGuidedTour {
+export class CardsComponent implements OnInit, HasGuidedTour {
 
-  @ViewChild('allCardsWrapper') allCardsElement: ElementRef;
-  @ViewChild('pickedCardsWrapper') pickedCardsElement: ElementRef;
+  @ViewChild('leaderboardModal') leaderboardModal: CommonModalComponent;
 
   cards: ICard[];
   pickedCards: ICard[];
-  score: number;
 
-  constructor(private renderer: Renderer2) {
+  matchingCardsGroup: any[] = [];
+  score = 0;
+  isLeaderboardModalVisible: boolean;
+
+  constructor(private dialogService: DialogService, private gamificationService: GamificationService, private changeDetector: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
-    this.score = 45;
     this._initCards();
-    // this._shuffle();
-  }
-
-  ngAfterViewInit(): void {
-    const allCardsWrapper = this.allCardsElement.nativeElement;
-    const pickedCardsWrapper = this.pickedCardsElement.nativeElement;
-
-    const allCardsStyle = (allCardsWrapper.offsetWidth - cardWidth) / totalCards;
-    const maxCardsStyle = (pickedCardsWrapper.offsetWidth - smallCardWidth) / maxCards;
-
-    this.renderer.setStyle(allCardsWrapper,
-      'grid-template-columns',
-      'repeat(' + totalCards + ', ' + (allCardsStyle + (allCardsStyle / totalCards)) + 'px)');
-    this.renderer.setStyle(pickedCardsWrapper,
-      'grid-template-columns',
-      'repeat(' + maxCards + ', ' + (maxCardsStyle + (maxCardsStyle / maxCards)) + 'px)');
   }
 
   tourAutoStart() {
@@ -59,8 +45,8 @@ export class CardsComponent implements OnInit, AfterViewInit, HasGuidedTour {
       // new ElementTourStep('#all-cards', 'Here, I will explain this.'),
       // new ElementTourStep('#pick-random-card-button', 'Here, I will explain this.'),
       // new ElementTourStep('#shuffle-cards-button', 'Here, I will explain this.'),
-      new ElementTourStep('#second-complex-thing', 'Then, I will explain this.'),
-      new HTMLTourStep(`Finally, we are <em>done</em>!`)
+      new ElementTourStep('#picked-cards', 'Then, I will explain this.'),
+      new ElementTourStep('#your-score', 'Then, I will explain this.'), new HTMLTourStep(`Finally, we are <em>done</em>!`)
     ];
   }
 
@@ -76,17 +62,38 @@ export class CardsComponent implements OnInit, AfterViewInit, HasGuidedTour {
     }
     this.cards[index].isPicked = true;
     this.pickedCards.push(this._dealOneCard(index));
-    /*if (this._checkPiles()) {
-
-    }*/
+    this._checkPiles(this.cards[index]);
+    if (!this.isCardAvailable()) {
+      this._showLeaderboardModal();
+    }
   }
 
-  shuffleCards() {
-    this._initCards();
-    this._shuffle();
+  shuffleCards(): void {
+    if (this.score > 0 && this.isCardAvailable()) {
+      this._showShuffleConfirmationModal();
+    } else {
+      this._initCards();
+    }
+  }
+
+  isCardAvailable(): boolean {
+    return this.cards.some(c => !c.isPicked);
+  }
+
+  hideLeaderboardModal() {
+    this.leaderboardModal.hide();
+    this.isLeaderboardModalVisible = false;
   }
 
   private _initCards(): void {
+    this._resetCards();
+    this._shuffle();
+    this.score = 0;
+    this.matchingCardsGroup = [];
+    this.gamificationService.resetDeck();
+  }
+
+  private _resetCards(): void {
     this.pickedCards = [];
     this.cards = [];
     for (const rank of Object.keys(RankEnum)) {
@@ -115,15 +122,43 @@ export class CardsComponent implements OnInit, AfterViewInit, HasGuidedTour {
     return this.cards[index];
   }
 
-  private _checkPiles(): void {
-    /* console.log(this.pickedCards.sort((a, b) => {
-       if (a.rank < b.rank) {
-         return -1;
-       }
-       if (a.rank > b.rank) {
-         return 1;
-       }
-       return 0;
-     }));*/
+  private _checkPiles(card: ICard): void {
+
+    const mappedCardsGroup = this.gamificationService.evaluateCard(card);
+
+    if (mappedCardsGroup.length !== 0) {
+      const matchingCards: ICard[] = [];
+      mappedCardsGroup
+        .sort((a, b) => b.idx - a.idx)
+        .forEach((winningCard) => {
+          const wCard: ICard = <ICard>this.gamificationService.cardUnmapper(winningCard);
+          matchingCards.push(wCard);
+          this.pickedCards = this.pickedCards.filter(c => !(c.suit === wCard.suit && c.rank === wCard.rank));
+        });
+      this.matchingCardsGroup.push(matchingCards);
+      this.score += mappedCardsGroup.reduce((a, b) => a + Math.min(b.idx, 10), 0);
+      this.gamificationService.removeGroupFromDeck(mappedCardsGroup);
+    }
+  }
+
+  private _showShuffleConfirmationModal(): void {
+    const data = {
+      title: 'Are you sure?',
+      message: 'Your score will be reinitialized'
+    };
+    this.dialogService.addDialog(ConfirmComponent, data)
+      .subscribe((isConfirmed) => {
+        if (isConfirmed) {
+          this.score = 0;
+          this._initCards();
+          this._shuffle();
+        }
+      });
+  }
+
+  private _showLeaderboardModal() {
+    this.isLeaderboardModalVisible = true;
+    this.changeDetector.detectChanges();
+    this.leaderboardModal.show();
   }
 }
