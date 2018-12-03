@@ -10,8 +10,6 @@ import {CommonModalComponent} from '../shared/common-modal/common-modal.componen
 import {CardSoundService} from './shared/card-sound/card-sound.service';
 import {Confetti} from '../shared/confetti/confetti.model';
 
-const maxCards = 52;
-
 @Component({
   selector: 'cards',
   templateUrl: './cards.component.html',

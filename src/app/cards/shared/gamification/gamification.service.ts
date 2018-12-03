@@ -12,57 +12,6 @@ export class GamificationService {
     this._initDeck();
   }
 
-  cardMapper(card) {
-    let idx = -1;
-
-    switch (card.rank) {
-      case '2':
-        idx = 2;
-        break;
-      case '3':
-        idx = 3;
-        break;
-      case '4':
-        idx = 4;
-        break;
-      case '5':
-        idx = 5;
-        break;
-      case '6':
-        idx = 6;
-        break;
-      case '7':
-        idx = 7;
-        break;
-      case '8':
-        idx = 8;
-        break;
-      case '9':
-        idx = 9;
-        break;
-      case '10':
-        idx = 10;
-        break;
-      case 'J':
-        idx = 11;
-        break;
-      case 'Q':
-        idx = 12;
-        break;
-      case 'K':
-        idx = 13;
-        break;
-      case 'A':
-        idx = 1;
-        break;
-    }
-
-    return {
-      idx: idx,
-      suit: card.suit
-    };
-  }
-
   cardUnmapper(mappedCard) {
     let rank;
 
@@ -118,7 +67,75 @@ export class GamificationService {
     };
   }
 
-  getPropagationFromIndex(startIdx, cardSuit) {
+  cardMapper(card) {
+    let idx = -1;
+
+    switch (card.rank) {
+      case '2':
+        idx = 2;
+        break;
+      case '3':
+        idx = 3;
+        break;
+      case '4':
+        idx = 4;
+        break;
+      case '5':
+        idx = 5;
+        break;
+      case '6':
+        idx = 6;
+        break;
+      case '7':
+        idx = 7;
+        break;
+      case '8':
+        idx = 8;
+        break;
+      case '9':
+        idx = 9;
+        break;
+      case '10':
+        idx = 10;
+        break;
+      case 'J':
+        idx = 11;
+        break;
+      case 'Q':
+        idx = 12;
+        break;
+      case 'K':
+        idx = 13;
+        break;
+      case 'A':
+        idx = 1;
+        break;
+    }
+
+    return {
+      idx: idx,
+      suit: card.suit
+    };
+  }
+
+  evaluateCard(card) {
+    const mappedCard = this.cardMapper(card);
+    this._addToDeck(mappedCard);
+    return this._tryGroup(mappedCard);
+  }
+
+  removeGroupFromDeck(mappedCards) {
+    mappedCards.forEach((mappedCard) => {
+      if (mappedCard.idx === 1) {
+        this.deck[mappedCard.suit][this.deck[mappedCard.suit].length - 1] = 0;
+        this.deck[mappedCard.suit][1] = 0;
+      } else {
+        this.deck[mappedCard.suit][mappedCard.idx] = 0;
+      }
+    });
+  }
+
+  private _getPropagationFromIndex(startIdx, cardSuit) {
     let left = startIdx;
     let right = startIdx;
 
@@ -136,7 +153,7 @@ export class GamificationService {
     return combination;
   }
 
-  getSameRankCombination(mappedCard) {
+  private _getSameRankCombination(mappedCard) {
     const combination = [];
 
     if (mappedCard.idx === 1) {
@@ -159,10 +176,10 @@ export class GamificationService {
     return combination;
   }
 
-  getSerieCombination(mappedCard) {
-    let defaultCombination = this.getPropagationFromIndex(mappedCard.idx, mappedCard.suit);
+  private _getSerieCombination(mappedCard) {
+    let defaultCombination = this._getPropagationFromIndex(mappedCard.idx, mappedCard.suit);
     if (mappedCard.idx === 1) {
-      const alternateCombination = this.getPropagationFromIndex(this.deck[mappedCard.suit].length - 1, mappedCard.suit);
+      const alternateCombination = this._getPropagationFromIndex(this.deck[mappedCard.suit].length - 1, mappedCard.suit);
       if (alternateCombination.length >= 3) {
         defaultCombination = alternateCombination;
       }
@@ -170,9 +187,9 @@ export class GamificationService {
     return defaultCombination;
   }
 
-  tryGroup(mappedCard) {
-    const serieCombinations = this.getSerieCombination(mappedCard);
-    const sameRankCombination = this.getSameRankCombination(mappedCard);
+  private _tryGroup(mappedCard) {
+    const serieCombinations = this._getSerieCombination(mappedCard);
+    const sameRankCombination = this._getSameRankCombination(mappedCard);
 
     const serieScore = serieCombinations.reduce((a, b) => a + Math.min(b.idx, 10), 0);
     const sameRankScore = sameRankCombination.reduce((a, b) => a + Math.min(b.idx, 10), 0);
@@ -185,28 +202,11 @@ export class GamificationService {
     return [];
   }
 
-  removeGroupFromDeck(mappedCards) {
-    mappedCards.forEach((mappedCard) => {
-      if (mappedCard.idx === 1) {
-        this.deck[mappedCard.suit][this.deck[mappedCard.suit].length - 1] = 0;
-        this.deck[mappedCard.suit][1] = 0;
-      } else {
-        this.deck[mappedCard.suit][mappedCard.idx] = 0;
-      }
-    });
-  }
-
-  addToDeck(mappedCard) {
+  private _addToDeck(mappedCard) {
     this.deck[mappedCard.suit][mappedCard.idx]++;
     if (mappedCard.idx === 1) {
       this.deck[mappedCard.suit][this.deck[mappedCard.suit].length - 1]++;
     }
-  }
-
-  evaluateCard(card) {
-    const mappedCard = this.cardMapper(card);
-    this.addToDeck(mappedCard);
-    return this.tryGroup(mappedCard);
   }
 
   private _initDeck(): void {
