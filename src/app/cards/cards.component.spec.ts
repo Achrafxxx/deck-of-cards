@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed, fakeAsync, tick, flush} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {CardsComponent} from './cards.component';
 import {SharedModule} from '../shared/shared.module';

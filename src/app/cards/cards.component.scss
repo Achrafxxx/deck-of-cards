@@ -59,12 +59,15 @@ $border-color: #ffffff;
       }
       .score-wrapper {
         @extend %cards-container-shared;
+        padding: 10px 25px;
         margin-left: 20px;
         display: flex;
         justify-content: center;
         align-items: center;
         .score-container {
-          width: 200px;
+          @media (min-width: 769px) {
+            min-width: 200px;
+          }
           text-align: center;
           color: #ffffff;
           h1 {

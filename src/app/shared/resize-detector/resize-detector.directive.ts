@@ -16,9 +16,17 @@ export class ResizeDetectorDirective implements OnInit {
     this.detectResize();
   }
 
-  @HostListener('window:resize')
-  detectResize(): void {
-    const allCardsStyle = (this.element.nativeElement.offsetWidth - this.cardWidth) / this.totalCards;
+  @HostListener('window:resize', ['$event'])
+  detectResize(event?: any): void {
+    const width = this.element.nativeElement.offsetWidth;
+
+    let cWidth = this.cardWidth;
+
+    if (this.cardWidth === 200 && ((width + 50) < 768 || (event && event.target.innerWidth < 768))) {
+      cWidth = 100;
+    }
+
+    const allCardsStyle = (width - cWidth) / this.totalCards;
 
     this.renderer.setStyle(this.element.nativeElement,
       'grid-template-columns',

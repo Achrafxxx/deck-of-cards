@@ -105,7 +105,7 @@ export class CardsComponent implements OnInit, HasGuidedTour {
   }
 
   dealOneCard(index: number): ICard {
-    if (!this.isCardAvailable() || index >= this.cards.length) {
+    if (index >= this.cards.length) {
       return;
     }
     return this.cards[index];
