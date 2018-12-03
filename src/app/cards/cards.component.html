@@ -3,9 +3,9 @@
     <div class="cards-container">
       <div class="all-cards-container" id="all-cards">
         <div class="cards-wrapper" resize-detector [cardWidth]="200" [totalCards]="52">
-          <div class="one-card-wrapper animated" *ngFor="let card of cards; let i = index" (click)="pickCard(i)"
-               [ngClass]="{'picked fadeOutDown':card.isPicked}">
-            <one-card [card]="card" [isAlwaysFlipped]="true"></one-card>
+          <div class="one-card-wrapper animated" *ngFor="let card of UICards; let i = index" (click)="pickCard(i)"
+               [ngClass]="{'picked fadeOutDown':cards[i].isPicked}">
+            <one-card [card]="cards[i]" [isAlwaysFlipped]="true"></one-card>
           </div>
         </div>
       </div>

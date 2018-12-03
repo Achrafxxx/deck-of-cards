@@ -23,6 +23,7 @@ export class CardsComponent implements OnInit, HasGuidedTour {
   @ViewChild('confettiElement') confettiElement: ElementRef;
 
   cards: ICard[];
+  UICards: ICard[];
   pickedCards: ICard[];
 
   matchingCardsGroup: any[] = [];
@@ -71,7 +72,7 @@ export class CardsComponent implements OnInit, HasGuidedTour {
       return;
     }
     this.cards[index].isPicked = true;
-    this.pickedCards.push(this._dealOneCard(index));
+    this.pickedCards.push(this.dealOneCard(index));
     this._checkPiles(this.cards[index]);
     if (!this.isCardAvailable()) {
       this._showLeaderboardModal();
@@ -88,17 +89,33 @@ export class CardsComponent implements OnInit, HasGuidedTour {
   }
 
   isCardAvailable(): boolean {
-    return this.cards.some(c => !c.isPicked);
+    return this.cards && this.cards.some(c => !c.isPicked);
   }
 
-  hideLeaderboardModal() {
+  hideLeaderboardModal(): void {
     this.leaderboardModal.hide();
     this.isLeaderboardModalVisible = false;
+  }
+
+  shuffle(): void {
+    for (let i = this.cards.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
+    }
+  }
+
+  dealOneCard(index: number): ICard {
+    if (!this.isCardAvailable() || index >= this.cards.length) {
+      return;
+    }
+    return this.cards[index];
   }
 
   private _initCards(): void {
     this.cardSoundService.play('shuffle');
     this._resetCards();
+    this.shuffle();
+    this._initUICards();
     this.score = 0;
     this.matchingCardsGroup = [];
     this.gamificationService.resetDeck();
@@ -107,7 +124,7 @@ export class CardsComponent implements OnInit, HasGuidedTour {
   private _resetCards(): void {
     this.pickedCards = [];
     this.cards = [];
-    const tmpCards = [];
+    this.UICards = [];
     for (const rank of Object.keys(RankEnum)) {
       for (const suit of Object.keys(SuitEnum)) {
         const card: ICard = {
@@ -115,32 +132,20 @@ export class CardsComponent implements OnInit, HasGuidedTour {
           suit: <SuitEnum>SuitEnum[suit],
           isPicked: false
         };
-        tmpCards.push(card);
+        this.cards.push(card);
       }
     }
+  }
+
+  _initUICards() {
     let i = 0;
     const interval = setInterval(() => {
-      this.cards.push(tmpCards[i]);
+      this.UICards.push(this.cards[i]);
       i++;
-      if (i > tmpCards.length - 1) {
-        this._shuffle();
+      if (i > this.cards.length - 1) {
         clearInterval(interval);
       }
     }, 10);
-  }
-
-  private _shuffle(): void {
-    for (let i = this.cards.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
-    }
-  }
-
-  private _dealOneCard(index: number): ICard {
-    if (this.pickedCards.length === maxCards) {
-      return;
-    }
-    return this.cards[index];
   }
 
   private _checkPiles(card: ICard): void {

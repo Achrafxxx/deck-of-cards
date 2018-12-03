@@ -19,8 +19,6 @@ export class LeaderboardComponent implements OnInit {
 
   ngOnInit() {
     this.oldRecords = JSON.parse(localStorage.getItem('records')) || [];
-    console.log(this.oldRecords);
-    console.log(this.score, this.oldRecords.some(p => p.score < this.score));
     if (this.oldRecords.length < 5 || this.oldRecords.some(p => p.score < this.score)) {
       this.isAddMode = true;
     }
@@ -33,7 +31,6 @@ export class LeaderboardComponent implements OnInit {
       date: new Date()
     };
     this.oldRecords.push(player);
-    console.log(this.oldRecords);
     this.oldRecords = this.oldRecords.sort((a, b) => b.score - a.score);
     if (this.oldRecords.length > 5) {
       this.oldRecords.pop();
