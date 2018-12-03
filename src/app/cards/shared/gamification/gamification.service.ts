@@ -1,4 +1,6 @@
 import {Injectable} from '@angular/core';
+import {ICard} from '../card.model';
+import {SuitEnum} from '../card-suit.enum';
 
 @Injectable()
 export class GamificationService {
@@ -12,7 +14,7 @@ export class GamificationService {
     this._initDeck();
   }
 
-  cardUnmapper(mappedCard) {
+  cardUnmapper(mappedCard: any): ICard {
     let rank;
 
     switch (mappedCard.idx) {
@@ -67,7 +69,7 @@ export class GamificationService {
     };
   }
 
-  cardMapper(card) {
+  cardMapper(card: ICard): any {
     let idx = -1;
 
     switch (card.rank) {
@@ -118,13 +120,13 @@ export class GamificationService {
     };
   }
 
-  evaluateCard(card) {
+  evaluateCard(card: ICard): any[] {
     const mappedCard = this.cardMapper(card);
     this._addToDeck(mappedCard);
     return this._tryGroup(mappedCard);
   }
 
-  removeGroupFromDeck(mappedCards) {
+  removeGroupFromDeck(mappedCards: any[]): void {
     mappedCards.forEach((mappedCard) => {
       if (mappedCard.idx === 1) {
         this.deck[mappedCard.suit][this.deck[mappedCard.suit].length - 1] = 0;
@@ -135,7 +137,7 @@ export class GamificationService {
     });
   }
 
-  private _getPropagationFromIndex(startIdx, cardSuit) {
+  private _getPropagationFromIndex(startIdx: number, cardSuit: SuitEnum): any[] {
     let left = startIdx;
     let right = startIdx;
 
@@ -153,7 +155,7 @@ export class GamificationService {
     return combination;
   }
 
-  private _getSameRankCombination(mappedCard) {
+  private _getSameRankCombination(mappedCard: any): any[] {
     const combination = [];
 
     if (mappedCard.idx === 1) {
@@ -176,7 +178,7 @@ export class GamificationService {
     return combination;
   }
 
-  private _getSerieCombination(mappedCard) {
+  private _getSerieCombination(mappedCard: any): any[] {
     let defaultCombination = this._getPropagationFromIndex(mappedCard.idx, mappedCard.suit);
     if (mappedCard.idx === 1) {
       const alternateCombination = this._getPropagationFromIndex(this.deck[mappedCard.suit].length - 1, mappedCard.suit);
@@ -187,7 +189,7 @@ export class GamificationService {
     return defaultCombination;
   }
 
-  private _tryGroup(mappedCard) {
+  private _tryGroup(mappedCard: any): any[] {
     const serieCombinations = this._getSerieCombination(mappedCard);
     const sameRankCombination = this._getSameRankCombination(mappedCard);
 
@@ -202,7 +204,7 @@ export class GamificationService {
     return [];
   }
 
-  private _addToDeck(mappedCard) {
+  private _addToDeck(mappedCard: any): void {
     this.deck[mappedCard.suit][mappedCard.idx]++;
     if (mappedCard.idx === 1) {
       this.deck[mappedCard.suit][this.deck[mappedCard.suit].length - 1]++;

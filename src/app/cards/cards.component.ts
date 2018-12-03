@@ -36,7 +36,7 @@ export class CardsComponent implements OnInit, HasGuidedTour {
     this._initCards();
   }
 
-  tourAutoStart() {
+  tourAutoStart(): boolean {
     return true;
   }
 
@@ -181,7 +181,7 @@ export class CardsComponent implements OnInit, HasGuidedTour {
       });
   }
 
-  private _showLeaderboardModal() {
+  private _showLeaderboardModal(): void {
     this.isLeaderboardModalVisible = true;
     this.changeDetector.detectChanges();
     this.leaderboardModal.show();

@@ -23,7 +23,7 @@ export class CardSoundService {
     this.audio.melt.volume = 0.8;
   }
 
-  play(type: string) {
+  play(type: string): void {
     this.audio[type].currentTime = 0;
     this.audio[type].play();
   }
