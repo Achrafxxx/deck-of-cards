@@ -8,7 +8,6 @@ import {FormsModule} from '@angular/forms';
 import {GamificationService} from './shared/gamification/gamification.service';
 import {OneCardComponent} from './one-card/one-card.component';
 import {CommonModule} from '@angular/common';
-import {forEach} from '@angular/router/src/utils/collection';
 import {ICard} from './shared/card.model';
 
 describe('CardsComponent', () => {
